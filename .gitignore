@@ -1,2 +1,2 @@
 .hrl_env
-__pycache__/**
+**/__pycache__/**
