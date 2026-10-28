@@ -8,6 +8,7 @@ import pybullet_data  # pyright: ignore[reportMissingImports]
 from robot_utils import (
     get_robot_center_of_mass,
     update_center_of_mass_indicator,
+    update_motion_indicator,
 )
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -49,6 +50,8 @@ def main() -> None:
         num_joints = pb.getNumJoints(robot_id, physicsClientId=physics_client)
         cog_arrow_ids = [-1, -1, -1]
         cog_label_id = -1
+        motion_arrow_ids = [-1, -1, -1]
+        motion_label_id = -1
 
         while True:
             pb.stepSimulation(physicsClientId=physics_client)
@@ -60,6 +63,20 @@ def main() -> None:
                 center_of_mass,
                 cog_arrow_ids,
                 cog_label_id,
+                physics_client,
+            )
+            base_position, _ = pb.getBasePositionAndOrientation(
+                robot_id, physicsClientId=physics_client
+            )
+            linear_velocity, _ = pb.getBaseVelocity(
+                robot_id, physicsClientId=physics_client
+            )
+            motion_arrow_ids, motion_label_id = update_motion_indicator(
+                pb,
+                base_position,
+                linear_velocity,
+                motion_arrow_ids,
+                motion_label_id,
                 physics_client,
             )
             time.sleep(1.0 / SIMULATION_RATE)
